@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODOList</title>
+    </head>
+
+    <body>
+        <h1>TODOList</h1>
+        <div class="inputDiv">
+            
+            <input type="text" class="input" placeholder="What are u gonna do...">
+
+            <button class="add"></button>
+
+        </div>
+    </body>
+
+    <h1> <p id="showtodos"></p> </h1> 
+    <script>
+
+        let inputValue = document.querySelector('input');
+        const add = document.querySelector('.add');
+
+        let todoEX = window.localStorage.getItem("todos");
+        let todos = JSON.parse(todoEX);
+
+        console.log(todos);
+
+        this.createElement('name');
+        function createElement(name) {
+
+            let itemAdd = document.createElement('div');
+            itemAdd.classList.add('item');
+
+            let input_todos = document.createElement('input');
+            input_todos.type="text";
+            input_todos.disabled=true;
+            input_todos.value = name;
+
+            itemAdd.appendChild(input_todos);
+        }
+
+        //CLick mouse
+        add.addEventListener('click', check);
+
+        // Press Enter
+        window.addEventListener('keydown', (e) => {
+
+            if(e.which == 13){
+                check();
+            }
+        })
+
+        function check(){
+
+            if(inputValue.value != ""){ 
+
+                todos.push(inputValue.value);
+                window.localStorage.setItem("todos", JSON.stringify(todos));
+                inputValue.value = "";
+
+                let showtodos;
+
+                for(let i = 0; i < todos.length;i++) {
+                    showtodos += todos[i] + "<br>";
+                }
+
+                document.getElementById("showtodos").innerHTML = showtodos;
+            }   
+        }
+
+    </script>
+
+    <style>
+        h1 {
+            text-align: center;
+        }
+    </style>
+</html>
