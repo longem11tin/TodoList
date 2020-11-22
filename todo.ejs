@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> ToDoList </title>
+        <meta charset="UTF-32"/>
+    </head>
+
+    <body>
+        <h1><span class="title">TODOList</span></h1>
+        <div class="wrapper">
+            <div data-todo="todo1"></div>
+            <div data-todo="todo1"></div>
+            <div data-todo="todo1"></div>
+        </div>
+    </body>
+
+    <script>
+
+        const rootElement = document.body.querySelectorAll("[data-todo]");
+
+        const Item = ({text , index , onChange , onDelete}) => {
+
+            let editMode = true;
+            const element = document.createElement("div");
+
+            const normalModeHTML = `<div class="item" data-index ="${index}"><p>${text}</p><div class="button-group"><button data-edit>Edit</button><button data-close>X</button></div></div>`
+            const editModeHTML = `<div class="item" data-index ="${index}"><input type="text" value = "${text}" /> <div class="button-group"><button data-edit>Edit</button><button data-close>X</button></div></div>`
+            
+            element.innerHTML = normalModeHTML;
+
+            const clickHandler = (e) => {
+                if (e.target.hasAttribute("data-close")) {
+                    
+                    onDelete(index, element);
+                    element.removeEventListener("click", clickHandler);
+                    element.removeEventListener("keydown", submitHandler);
+
+                } else if (e.target.hasAttribute("data-edit")) { 
+                    
+                    element.innerHTML = editMode? editModeHTML : normalModeHTML;
+                    editMode = !editMode;
+                }
+            };
+
+            const submitHandler =(e) => {
+                if (e.which == 13) {
+                    const text = element.querySelector("input").value.trim();
+                    onChange(index, text);
+                }
+            };
+
+            element.addEventListener("click" , clickHandler);
+            element.addEventListener("keydown", submitHandler);
+
+            return {
+                element
+            };
+        };
+
+        const Todo = (root) => {
+            let listElement;
+            let input;
+            const list = [];
+            
+            const initialize = () => {
+
+                input = document.createElement("input");
+                input.addEventListener("keydown", (e) => e.which === 13 && addItem(e));
+                root.appendChild(input);
+
+                listElement = document.createElement("div");
+                root.appendChild(listElement);
+
+                list.forEach(({ text }, index) => {
+                    listElement.append(
+                        Item ({text, index, onChange: changeItem, onDelete: deleteItem}).element
+                    );
+                });
+            };
+            
+            const deleteItem = (index, element) => {
+                list.splice(index,1);
+                listElement.removeChild(element);
+            };
+
+            const changeItem = (index, text) => {
+                list[index].text = text;
+                renderAll();
+            };
+
+            const addItem = ({ target: { value } }) => {
+
+                if (!value.trim()) {
+                    return ;
+                }
+
+                list.push({ text: value.trim() });
+                input.value="";
+                var length_ = list.length;
+
+                listElement.append(
+                    Item({
+                        text: list[length_ - 1].text,
+                        index: length_ - 1,
+                        onChange: changeItem,
+                        onDelete: deleteItem
+                    }).element
+                );
+
+            };
+
+            const renderAll = () => {
+                listElement.innerHTML = "";
+                list.forEach(({ text }, index) => {
+                    listElement.append(
+                        Item({ text, index, onDelete: deleteItem, onChange: changeItem })
+                        .element
+                    );
+                });
+            };
+
+            initialize();
+        };
+
+        rootElement.forEach(Todo);
+
+    </script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: black;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 3rem;
+            font-weight: 50;
+            text-align: center;
+            margin: 1rem 0 3rem;
+            font-family: 'Hind', sans-serif;
+        }
+
+        .title {
+            color: cyan;
+            text-transform:capitalize;
+            font-weight: 800;
+        }
+
+        .wrapper {
+            max-width: 100%;
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        [data-todo] {
+            flex: 1;
+            padding: 20px;
+            outline: none;
+            border: none;
+            height: 50px;
+            border-radius: 55px;
+            width: 350px;
+            margin: 0.25rem;
+            transition: .5s;
+            font-size: 1.15rem;
+        }
+
+        .item {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            color: white;
+            background: black;
+            outline: none;
+            color: white;
+            border: black;
+            font-size: 2.0rem;
+            font-family: 'Hind', sans-serif;
+            margin: 0 0.5rem;
+            cursor: pointer;   
+            /* animation: show .5s ease; */
+        }
+
+        @keyframes show {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .item p {
+            margin: 0;
+            background: black;
+            outline: none;
+            color: white;
+            border: black;
+            font-size: 2.0rem;
+            font-family: 'Hind', sans-serif;
+            margin: 0 0.5rem;
+            cursor: pointer;    
+        }
+
+        .item button {
+
+            background: black;
+            outline: none;
+            color: lime;
+            border: black;
+            font-size: 2.0rem;
+            font-family: 'Hind', sans-serif;
+            margin: 0 0.5rem;
+            cursor: pointer;    
+        }
+
+        [data-todo] input {
+            border: none;
+            height: 30px;
+            width: 250px;
+            border-radius: 20px;
+            background-color: none;
+            color: black;
+            cursor: pointer;
+            margin: 0.25rem;
+            float: left;
+            font-size: 16px;
+        }
+
+        [data-todo] input:hover{
+	        opacity: 0.7;
+            background-color: #bbb;
+        }
+
+  </style>
+
+</html>
